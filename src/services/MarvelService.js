@@ -14,18 +14,30 @@ class MarvelService {
         return await res.json();
     }
 
-    getAllCharacters = () => {
+    getAllCharacters = async () => {
         //read authorization doc
         const limit = 9;
         const offset = 250;
-        return this.getSource(`${this._apiBase}characters?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&hash=${this._md5Hash}`);
+        const res = await this.getSource(`${this._apiBase}characters?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&hash=${this._md5Hash}`);
+        return res.data.results.map(this._transformCharacter);
     }
 
-    getCharacter = (id) => {
+    getCharacter = async (id) => {
         //read authorization doc
         const limit = 9;
         const offset = 250;
-        return this.getSource(`${this._apiBase}characters/${id}?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&&hash=${this._md5Hash}`);
+        const res = await this.getSource(`${this._apiBase}characters/${id}?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&&hash=${this._md5Hash}`);
+        return this._transformCharacter(res.data.results[0]);
+    }
+
+    _transformCharacter = (char) => {
+        return {
+            name: char.name,
+            description: char.description ? `${char.description.slice(0, 310)}...` : 'There is no description for this character',
+            thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
+            homepage: char.urls[0].url,
+            wiki: char.urls[1].url
+        }
     }
 }
 
