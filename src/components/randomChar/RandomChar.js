@@ -8,46 +8,77 @@ import mjolnir from '../../resources/img/mjolnir.png';
 
 
 class RandomChar extends Component {
-    constructor(props) {
-        super(props);
-        this.updateChar();
-    }
 
     state = {
         char: {},
         loading: true,
-        error: false
+        error: false,
+        retryCount: 0
     }
 
+    MAX_RETRY_COUNT = 5;
+
     marvelService = new MarvelService(); //тоже самое что и this.marvelService, то есть создаем конструктор - синтаксис полей класса
+
+    componentDidMount() {
+        this.updateChar();
+    }
+
 
     onCharLoaded = (char) => {
         this.setState({
             char,
-            loading: false
+            loading: false,
+            retryCount: 0,
+            error: false
         });
     }
 
     onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        });
+        const { retryCount } = this.state;
+
+        if (retryCount < this.MAX_RETRY_COUNT) {
+            this.setState({
+                retryCount: retryCount + 1
+            }, () => {
+                this.updateChar();
+            });
+        } else {
+            this.setState({
+                loading: false,
+                error: true,
+                retryCount: 0
+            });
+        }
     }
 
     updateChar = () => {
-        const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
-        this.marvelService
-            .getCharacter(id)
-            .then(this.onCharLoaded)
-            .catch(this.onError);
+        const { retryCount } = this.state;
+
+        if (retryCount < this.MAX_RETRY_COUNT) {
+            const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
+            this.marvelService
+                .getCharacter(id)
+                .then(this.onCharLoaded)
+                .catch(this.onError);
+            console.log('onupdate')
+        }
+        if (this.state.error) {
+            this.onCharLoading();
+        }
+    }
+
+    onCharLoading = () => {
+        this.updateChar();
     }
 
     render() {
         const {char, loading, error} = this.state;
         const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
-        const content = errorMessage || spinner || <View char={char} />
+        const content = errorMessage || spinner || <View char={char}/>
+
+
 
         return (
             <div className="randomchar">
@@ -61,7 +92,10 @@ class RandomChar extends Component {
                         Or choose another one
                     </p>
                     <button className="button button__main">
-                        <div className="inner">try it</div>
+                        <div
+                            className="inner"
+                            onClick={this.onCharLoading}
+                        >try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
                 </div>
@@ -72,11 +106,12 @@ class RandomChar extends Component {
 
 const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
-
+    const hasError = thumbnail.includes("image_not_available.jpg");
+    const imgClassName = `randomchar__img ${hasError ? "error" : ""}`;
 
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <img src={thumbnail} alt="Random character" className={imgClassName}/>
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">
