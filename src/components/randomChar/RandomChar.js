@@ -54,6 +54,7 @@ class RandomChar extends Component {
 
     updateChar = () => {
         const { retryCount } = this.state;
+        this.onCharLoading();
 
         if (retryCount < this.MAX_RETRY_COUNT) {
             const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
@@ -61,7 +62,6 @@ class RandomChar extends Component {
                 .getCharacter(id)
                 .then(this.onCharLoaded)
                 .catch(this.onError);
-            console.log('onupdate')
         }
         if (this.state.error) {
             this.onCharLoading();
@@ -69,7 +69,9 @@ class RandomChar extends Component {
     }
 
     onCharLoading = () => {
-        this.updateChar();
+        this.setState({
+            loading: true
+        })
     }
 
     render() {
@@ -89,11 +91,9 @@ class RandomChar extends Component {
                     <p className="randomchar__title">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    <button onClick={this.updateChar} className="button button__main">
                         <div
-                            className="inner"
-                            onClick={this.onCharLoading}
-                        >try it</div>
+                            className="inner">try it</div>
                     </button>
                     <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
                 </div>

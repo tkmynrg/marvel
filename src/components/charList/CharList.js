@@ -1,60 +1,80 @@
-import { Component } from "react";
-import MarvelService from "../../services/MarvelService";
-
+import {Component} from 'react';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
+import MarvelService from '../../services/MarvelService';
 import './charList.scss';
-import abyss from '../../resources/img/abyss.jpg';
 
+class CharList extends Component {
 
-class CharList extends Component  {
     state = {
-        char: {},
+        charList: [],
         loading: true,
-        error: false,
-        retryCount: 0,
-        characters: []
+        error: false
     }
 
     marvelService = new MarvelService();
 
-
-    allCharRender = () => {
-        // вызываем метод для получения персонажей с сервера
-        this.marvelService.getAllCharacters()
-            .then(this.onAllCharLoaded) // обрабатываем ответ
-    }
-
-// обновляем состояние массива characters при получении ответа с сервера
-    onAllCharLoaded = (characters) => {
-        this.setState({
-            characters,
-            error: false,
-        });
-    }
-
-
-
     componentDidMount() {
-        this.allCharRender();
+        this.marvelService.getAllCharacters()
+            .then(this.onCharListLoaded)
+            .catch(this.onError)
     }
 
-    render () {
-        const {char,characters} = this.state;
-        const charList = characters.map((char, index) => {
-            const { id, name, thumbnail } = char;
-            const hasError = thumbnail.includes("image_not_available.jpg");
-            const imgClassName = ` ${hasError ? "error" : ""}`
+    onCharListLoaded = (charList) => {
+        this.setState({
+            charList,
+            loading: false
+        })
+    }
+
+    onError = () => {
+        this.setState({
+            error: true,
+            loading: false
+        })
+    }
+
+    // Этот метод создан для оптимизации,
+    // чтобы не помещать такую конструкцию в метод render
+    renderItems(arr) {
+        const items =  arr.map((item) => {
+            let imgStyle = {'objectFit' : 'cover'};
+            if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+                imgStyle = {'objectFit' : 'unset'};
+            }
+
             return (
-                <li key={index} className="char__item">
-                    <img className={imgClassName} src={thumbnail} alt={name} />
-                    <div className="char__name">{name}</div>
+                <li
+                    className="char__item"
+                    key={item.id}>
+                    <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
+                    <div className="char__name">{item.name}</div>
                 </li>
-            );
+            )
         });
+        // А эта конструкция вынесена для центровки спиннера/ошибки
+        return (
+            <ul className="char__grid">
+                {items}
+            </ul>
+        )
+    }
+
+    render() {
+
+        const {charList, loading, error} = this.state;
+
+        const items = this.renderItems(charList);
+
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error) ? items : null;
+
         return (
             <div className="char__list">
-                <ul className="char__grid">
-                    {charList}
-                </ul>
+                {errorMessage}
+                {spinner}
+                {content}
                 <button className="button button__main button__long">
                     <div className="inner">load more</div>
                 </button>
