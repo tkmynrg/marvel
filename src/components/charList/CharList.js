@@ -39,12 +39,12 @@ class CharList extends Component  {
 
     render () {
         const {char,characters} = this.state;
-        const charList = characters.map((char) => {
+        const charList = characters.map((char, index) => {
             const { id, name, thumbnail } = char;
             const hasError = thumbnail.includes("image_not_available.jpg");
             const imgClassName = ` ${hasError ? "error" : ""}`
             return (
-                <li key={id} className="char__item">
+                <li key={index} className="char__item">
                     <img className={imgClassName} src={thumbnail} alt={name} />
                     <div className="char__name">{name}</div>
                 </li>
