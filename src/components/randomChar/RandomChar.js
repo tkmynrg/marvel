@@ -120,7 +120,7 @@ const View = ({char}) => {
                         <div className="inner">homepage</div>
                     </a>
                     <a target={'_blank'} href={wiki} className="button button__secondary">
-                        <div className="inner">Wiki</div>
+                        <div className="inner">wiki</div>
                     </a>
                 </div>
             </div>
