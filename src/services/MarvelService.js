@@ -17,7 +17,7 @@ class MarvelService {
     getAllCharacters = async () => {
         //read authorization doc
         const limit = 9;
-        const offset = 250;
+        const offset = 300;
         const res = await this.getSource(`${this._apiBase}characters?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&hash=${this._md5Hash}`);
         return res.data.results.map(this._transformCharacter);
     }
@@ -37,7 +37,8 @@ class MarvelService {
             description: char.description ? `${char.description.slice(0, 250)}...` : 'There is no description for this character',
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
             homepage: char.urls[0].url,
-            wiki: char.urls[1].url
+            wiki: char.urls[1].url,
+            comics: char.comics.items.slice(0, 10)
         }
     }
 }

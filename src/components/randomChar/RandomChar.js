@@ -104,7 +104,7 @@ class RandomChar extends Component {
 
 const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
-    const hasError = thumbnail.includes("image_not_available.jpg");
+    const hasError = thumbnail.includes("image_not_available");
     const imgClassName = `randomchar__img ${hasError ? "error" : ""}`;
 
     return (
