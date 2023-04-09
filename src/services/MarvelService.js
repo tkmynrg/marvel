@@ -4,6 +4,8 @@ class MarvelService {
     _apiKey = 'aed543bfcbb8b6ade58671ec0ef0b9a5';
     _md5Hash = '992e28432e27e0166986a9a97f4531bf';
     _ts = 1;
+    _baseOffset = 250;
+
     getSource = async (url) => {
         let res = await fetch(url);
 
@@ -14,10 +16,9 @@ class MarvelService {
         return await res.json();
     }
 
-    getAllCharacters = async () => {
+    getAllCharacters = async (offset = this._baseOffset) => {
         //read authorization doc
         const limit = 9;
-        const offset = 300;
         const res = await this.getSource(`${this._apiBase}characters?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&hash=${this._md5Hash}`);
         return res.data.results.map(this._transformCharacter);
     }
@@ -25,8 +26,7 @@ class MarvelService {
     getCharacter = async (id) => {
         //read authorization doc
         const limit = 9;
-        const offset = 250;
-        const res = await this.getSource(`${this._apiBase}characters/${id}?limit=${limit}&offset=${offset}&ts=${this._ts}&apikey=${this._apiKey}&&hash=${this._md5Hash}`);
+        const res = await this.getSource(`${this._apiBase}characters/${id}?limit=${limit}&ts=${this._ts}&apikey=${this._apiKey}&&hash=${this._md5Hash}`);
         return this._transformCharacter(res.data.results[0]);
     }
 
