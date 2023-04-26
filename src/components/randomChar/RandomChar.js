@@ -4,8 +4,6 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../../services/MarvelService";
 
 import './randomChar.scss';
-import mjolnir from '../../resources/img/mjolnir.png';
-
 
 class RandomChar extends Component {
 
@@ -95,7 +93,6 @@ class RandomChar extends Component {
                         <div
                             className="inner">try it</div>
                     </button>
-                    <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
                 </div>
             </div>
         )

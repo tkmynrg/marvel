@@ -1,71 +1,67 @@
-import {Component} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
 import PropTypes from "prop-types";
 import './charList.scss';
 import CharInfo from "../charInfo/CharInfo";
+import charInfo from "../charInfo/CharInfo";
 
-class CharList extends Component {
+const CharList = () => {
 
-    state = {
-        charList: [],
-        loading: true,
-        error: false,
-        newItemLoading: false,
-        offset: 250,
-        charEnded: false
+    const [charList, setCharList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [newItemLoading, setNewItemLoading] = useState(false);
+    const [offset, setOffset] = useState(250);
+    const [charEnded, setCharEnded] = useState(false);
+
+
+    const marvelService = new MarvelService();
+
+    useEffect(() => {
+        onRequest();
+    }, [])
+
+    const onRequest = (offset) => {
+        onCharListLoading();
+        marvelService.getAllCharacters(offset)
+            .then(onCharListLoaded)
+            .catch(onError)
     }
 
-    marvelService = new MarvelService();
-
-    componentDidMount() {
-        this.onRequest();
+    const onCharListLoading = () => {
+        setNewItemLoading(true);
     }
 
-    //Отвечает за запрос на сервер.
-    //Первый раз мы его вызываем когда компонент отрендерился в componentDidMount без аргумента чтобы ориентироваться на baseOffset стандартный = 250
-    // Далее когда вызывается onCharlistLoading - в нем меняется состояние newItemLoading на true
-    //Далее вызывается onCharListLoaded который получает в себя новые данные  newCharList и из этих новых данных формируется новое состояние [...charList, ...newCharList] и в первый проход/запуск в charList будет пустой массив потому что в state он [] пустой и в последующих запусках там будет старые элементы + новые и складываются в один массив который мы будем использовать в charList, а он пойдет в формирование нашей верстки/структуры
-    onRequest = (offset) => {
-        this.onCharListLoading();
-        this.marvelService.getAllCharacters(offset)
-            .then(this.onCharListLoaded)
-            .catch(this.onError)
-    }
-
-    onCharListLoading = () => {
-        this.setState({
-            newItemLoading: true
-        })
-    }
-
-    onCharListLoaded = (newCharList) => {
+    const onCharListLoaded = (newCharList) => {
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
         }
 
-
-        this.setState(({charList, offset}) => ({
-            charList: [...charList, ...newCharList],
-            loading: false,
-            newItemLoading: false,
-            offset: offset + 9,
-            charEnded: ended
-        }))
+        setCharList(charList => [...charList, ...newCharList]);
+        setLoading(loading => false);
+        setNewItemLoading(newItemLoading => false);
+        setOffset(offset => offset + 9);
+        setCharEnded(charEnded => ended)
     }
 
-    onError = () => {
-        this.setState({
-            error: true,
-            loading: false
-        })
+    const onError = () => {
+        setError(error => true);
+        setLoading(loading => false);
     }
 
-    // Этот метод создан для оптимизации,
-    // чтобы не помещать такую конструкцию в метод render
-    renderItems(arr) {
+    const itemRefs = useRef([]);
+
+    const focusOnItem = (id) => {
+        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+        itemRefs.current[id].classList.add('char__item_selected');
+        itemRefs.current[id].focus();
+    }
+
+
+    function renderItems(arr) {
         const items =  arr.map((item) => {
             let imgStyle = {'objectFit' : 'cover'};
             if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
@@ -76,6 +72,8 @@ class CharList extends Component {
                 <li
                     className="char__item"
                     key={item.id}
+                    tabIndex={0}
+                    ref={el => itemRefs.current[i] = el}
                     onClick={() => this.props.onCharSelected(item.id)}>
                     <img src={item.thumbnail} alt={item.name} style={imgStyle}/>
                     <div className="char__name">{item.name}</div>
