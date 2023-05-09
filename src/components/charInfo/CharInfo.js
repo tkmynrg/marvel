@@ -1,95 +1,68 @@
-import {Component} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-
 
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Skeleton from "../skeleton/Skeleton";
 
-import './charInfo.scss';
+import "./charInfo.scss";
 
-class CharInfo extends Component {
+const CharInfo = ({ charId }) => {
+    const [char, setChar] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
-    state = {
-        char: null,
-        loading: false,
-        error: false,
-    }
+    const marvelService = useRef(new MarvelService());
 
-    marvelService = new MarvelService();
+    useEffect(() => {
+        updateChar();
+    }, [charId]);
 
-    componentDidMount() {
-        this.updateChar();
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.charId !== prevProps.charId) {
-            this.updateChar()
-        }
-    }
-
-
-    updateChar = () => {
-        //деструктуризация charId из props переданный в App.js CharInfo
-        const {charId} = this.props
+    const updateChar = () => {
         if (!charId) {
             return;
         }
 
-        this.onCharLoading(); //показывается спиннер перед запросом
+        onCharLoading();
 
-        this.marvelService
+        marvelService.current
             .getCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError);
-        //когда придет ответ от сервиса marvelService в формате одного объекта с персонажем (charID) он попадет в onCharLoaded в качестве аргумента char в функции onCharLoaded и запишется в состояние state: char.
-        //То есть после ответа от сервиса onCharLoaded будет вызываться внутри then
-    }
+            .then(onCharLoaded)
+            .catch(onError);
+    };
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char,
-            loading: false,
-        })
-    }
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
+    };
 
-    onCharLoading = () => {
-        this.setState({
-            loading: true
-        })
-    }
+    const onCharLoading = () => {
+        setLoading(true);
+    };
 
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        })
-    }
+    const onError = () => {
+        setLoading(false);
+        setError(true);
+    };
 
+    const skeleton = char || loading || error ? null : <Skeleton />;
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(loading || error || !char) ? <View char={char} /> : null;
 
-    render() {
-        const {char, loading, error} = this.state;
-        const skeleton = char || loading || error ? null : <Skeleton/>
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error || !char) ? <View char={char}/> : null;
+    return (
+        <div className="char__info">
+            {skeleton}
+            {errorMessage}
+            {spinner}
+            {content}
+        </div>
+    );
+};
 
-
-        return (
-            <div className="char__info">
-                {skeleton}
-                {errorMessage}
-                {spinner}
-                {content}
-            </div>
-        )
-    }
-}
-
-const View = ({char}) => {
-
-    const {name, description, thumbnail, homepage, wiki, comics} = char;
+const View = ({ char }) => {
+    const { name, description, thumbnail, homepage, wiki, comics } = char;
 
     const hasError = thumbnail.includes("image_not_available");
     const imgClassName = `randomchar__img ${hasError ? "error" : ""}`;
@@ -97,41 +70,47 @@ const View = ({char}) => {
     return (
         <>
             <div className="char__basics">
-                <img className={imgClassName} src={thumbnail} alt={name}/>
+                <img className={imgClassName} src={thumbnail} alt={name} />
                 <div>
                     <div className="char__info-name">{name}</div>
                     <div className="char__btns">
-                        <a target={"_blank"}  rel="noreferrer" href={homepage} className="button button__main">
+                        <a
+                            target={"_blank"}
+                            rel="noreferrer"
+                            href={homepage}
+                            className="button button__main"
+                        >
                             <div className="inner">homepage</div>
                         </a>
-                        <a target={"_blank"}  rel="noreferrer" href={wiki} className="button button__secondary">
+                        <a
+                            target={"_blank"}
+                            rel="noreferrer"
+                            href={wiki}
+                            className="button button__secondary"
+                        >
                             <div className="inner">Wiki</div>
                         </a>
                     </div>
                 </div>
             </div>
-            <div className="char__descr">
-                {description}
-            </div>
+            <div className="char__descr">{description}</div>
             <div className="char__comics">Comics:</div>
             <ul className="char__comics-list">
-                {comics.length > 0 ? null : 'Comics is not yet'}
-                {
-                    comics.map((item, i) => {
-                        return (
-                            <li key={i} className="char__comics-item">
-                                {item.name}
-                            </li>
-                        )
-                    })
-                }
+                {comics.length > 0 ? null : "Comics is not yet"}
+                {comics.map((item, i) => {
+                    return (
+                        <li key={i} className="char__comics-item">
+                            {item.name}
+                        </li>
+                    );
+                })}
             </ul>
         </>
-    )
-}
+    );
+};
 
 CharInfo.propTypes = {
-    charId: PropTypes.number
-}
+    charId: PropTypes.number,
+};
 
 export default CharInfo;

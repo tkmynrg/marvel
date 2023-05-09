@@ -1,128 +1,104 @@
-import { Component } from "react";
-import Spinner from "../spinner/Spinner"
+import React, { useState, useEffect } from "react";
+import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../../services/MarvelService";
 
-import './randomChar.scss';
+import "./randomChar.scss";
 
-class RandomChar extends Component {
+const RandomChar = () => {
+    const [char, setChar] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
 
-    state = {
-        char: {},
-        loading: true,
-        error: false,
-        retryCount: 0
-    }
+    const MAX_RETRY_COUNT = 5;
 
-    MAX_RETRY_COUNT = 5;
+    const marvelService = new MarvelService();
 
-    marvelService = new MarvelService(); //тоже самое что и this.marvelService, то есть создаем конструктор - синтаксис полей класса
+    useEffect(() => {
+        updateChar();
+    }, [retryCount]);
 
-    componentDidMount() {
-        this.updateChar();
-    }
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
+        setRetryCount(0);
+        setError(false);
+    };
 
-
-    onCharLoaded = (char) => {
-        this.setState({
-            char,
-            loading: false,
-            retryCount: 0,
-            error: false
-        });
-    }
-
-    onError = () => {
-        const { retryCount } = this.state;
-
-        if (retryCount < this.MAX_RETRY_COUNT) {
-            this.setState({
-                retryCount: retryCount + 1
-            }, () => {
-                this.updateChar();
-            });
+    const onError = () => {
+        if (retryCount < MAX_RETRY_COUNT) {
+            setRetryCount(retryCount + 1);
         } else {
-            this.setState({
-                loading: false,
-                error: true,
-                retryCount: 0
-            });
+            setLoading(false);
+            setError(true);
+            setRetryCount(0);
         }
-    }
+    };
 
-    updateChar = () => {
-        const { retryCount } = this.state;
-        this.onCharLoading();
+    const updateChar = () => {
+        onCharLoading();
 
-        if (retryCount < this.MAX_RETRY_COUNT) {
+        if (retryCount < MAX_RETRY_COUNT) {
             const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
-            this.marvelService
+            marvelService
                 .getCharacter(id)
-                .then(this.onCharLoaded)
-                .catch(this.onError);
+                .then(onCharLoaded)
+                .catch(onError);
         }
-        if (this.state.error) {
-            this.onCharLoading();
+        if (error) {
+            onCharLoading();
         }
-    }
+    };
 
-    onCharLoading = () => {
-        this.setState({
-            loading: true
-        })
-    }
+    const onCharLoading = () => {
+        setLoading(true);
+    };
 
-    render() {
-        const {char, loading, error} = this.state;
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = errorMessage || spinner || <View char={char}/>
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = errorMessage || spinner || <View char={char} />;
 
-        return (
-            <div className="randomchar">
-                {content}
-                <div className="randomchar__static">
-                    <p className="randomchar__title">
-                        Random character for today!<br/>
-                        Do you want to get to know him better?
-                    </p>
-                    <p className="randomchar__title">
-                        Or choose another one
-                    </p>
-                    <button onClick={this.updateChar} className="button button__main">
-                        <div
-                            className="inner">try it</div>
-                    </button>
-                </div>
+    return (
+        <div className="randomchar">
+            {content}
+            <div className="randomchar__static">
+                <p className="randomchar__title">
+                    Random character for today!
+                    <br />
+                    Do you want to get to know him better?
+                </p>
+                <p className="randomchar__title">Or choose another one</p>
+                <button onClick={updateChar} className="button button__main">
+                    <div className="inner">try it</div>
+                </button>
             </div>
-        )
-    }
-}
+        </div>
+    );
+};
 
-const View = ({char}) => {
-    const {name, description, thumbnail, homepage, wiki} = char;
+const View = ({ char }) => {
+    const { name, description, thumbnail, homepage, wiki } = char;
     const hasError = thumbnail.includes("image_not_available");
     const imgClassName = `randomchar__img ${hasError ? "error" : ""}`;
 
     return (
         <div className="randomchar__block">
-            <img src={thumbnail} alt="Random character" className={imgClassName}/>
+            <img src={thumbnail} alt="Random character" className={imgClassName} />
             <div className="randomchar__info">
                 <p className="randomchar__name">{name}</p>
-                <p className="randomchar__descr">
-                    {description}
-                </p>
+                <p className="randomchar__descr">{description}</p>
                 <div className="randomchar__btns">
-                    <a target={'_blank'} href={homepage} className="button button__main">
+                    <a target={"_blank"} href={homepage} className="button button__main">
                         <div className="inner">homepage</div>
                     </a>
-                    <a target={'_blank'} href={wiki} className="button button__secondary">
+                    <a target={"_blank"} href={wiki} className="button button__secondary">
                         <div className="inner">Wiki</div>
                     </a>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default RandomChar;
