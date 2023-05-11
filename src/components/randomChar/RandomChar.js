@@ -1,58 +1,28 @@
 import React, { useState, useEffect } from "react";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 
 import "./randomChar.scss";
 
 const RandomChar = () => {
     const [char, setChar] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [retryCount, setRetryCount] = useState(0);
+    const {loading, error, getCharacter} = useMarvelService();
 
-    const MAX_RETRY_COUNT = 5;
-
-    const marvelService = new MarvelService();
 
     useEffect(() => {
         updateChar();
-    }, [retryCount]);
+    },[]);
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-        setRetryCount(0);
-        setError(false);
-    };
-
-    const onError = () => {
-        if (retryCount < MAX_RETRY_COUNT) {
-            setRetryCount(retryCount + 1);
-        } else {
-            setLoading(false);
-            setError(true);
-            setRetryCount(0);
-        }
     };
 
     const updateChar = () => {
-        onCharLoading();
 
-        if (retryCount < MAX_RETRY_COUNT) {
-            const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
-            marvelService
-                .getCharacter(id)
-                .then(onCharLoaded)
-                .catch(onError);
-        }
-        if (error) {
-            onCharLoading();
-        }
-    };
-
-    const onCharLoading = () => {
-        setLoading(true);
+        const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
+            getCharacter(id)
+            .then(onCharLoaded);
     };
 
     const errorMessage = error ? <ErrorMessage /> : null;
@@ -79,8 +49,9 @@ const RandomChar = () => {
 
 const View = ({ char }) => {
     const { name, description, thumbnail, homepage, wiki } = char;
-    const hasError = thumbnail.includes("image_not_available");
-    const imgClassName = `randomchar__img ${hasError ? "error" : ""}`;
+    console.log(thumbnail)
+    // const hasError = thumbnail.includes("image_not_available");
+    const imgClassName = `randomchar__img`;
 
     return (
         <div className="randomchar__block">

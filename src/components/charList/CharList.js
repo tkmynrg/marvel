@@ -4,6 +4,7 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
 import PropTypes from "prop-types";
 import './charList.scss';
+import useMarvelService from "../../services/MarvelService";
 
 const CharList = (props) => {
 
@@ -15,7 +16,7 @@ const CharList = (props) => {
     const [charEnded, setCharEnded] = useState(false);
 
 
-    const marvelService = new MarvelService();
+    const marvelService = useMarvelService();
 
     useEffect(() => {
         onRequest();
