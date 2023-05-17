@@ -7,7 +7,7 @@ import "./randomChar.scss";
 
 const RandomChar = () => {
     const [char, setChar] = useState({});
-    const {loading, error, getCharacter} = useMarvelService();
+    const {loading, error, getCharacter, clearError} = useMarvelService();
 
 
     useEffect(() => {
@@ -19,7 +19,7 @@ const RandomChar = () => {
     };
 
     const updateChar = () => {
-
+        clearError();
         const id = Math.floor(Math.random() * (1010789 - 1009146) + 1009146);
             getCharacter(id)
             .then(onCharLoaded);
@@ -49,7 +49,6 @@ const RandomChar = () => {
 
 const View = ({ char }) => {
     const { name, description, thumbnail, homepage, wiki } = char;
-    console.log(thumbnail)
     // const hasError = thumbnail.includes("image_not_available");
     const imgClassName = `randomchar__img`;
 
