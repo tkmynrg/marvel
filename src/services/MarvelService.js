@@ -21,7 +21,7 @@ const useMarvelService = () => {
     const getCharacter = async (id) => {
         //read authorization doc
         const limit = 9;
-        const res = await request(`${_apiBase}characters/${id}?limit=${limit}&ts=${_ts}&apikey=${_apiKey}&&hash=${_md5Hash}`);
+        const res = await request(`${_apiBase}characters/${id}?limit=${limit}&ts=${_ts}&apikey=${_apiKey}&hash=${_md5Hash}`);
         return _transformCharacter(res.data.results[0]);
     }
 
