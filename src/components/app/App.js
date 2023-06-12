@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {BrowserRouter as Router, Route} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import AppHeader from "../appHeader/AppHeader";
 import RandomChar from "../randomChar/RandomChar";
@@ -9,6 +9,7 @@ import ComicsList from "../comicsList/ComicsList";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
+import AppBanner from "../appBanner/AppBanner";
 
 const App = () => {
 
@@ -24,21 +25,26 @@ const App = () => {
             <div className="app">
                 <AppHeader/>
                 <main>
-                    <ErrorBoundary>
-                        <RandomChar/>
-                    </ErrorBoundary>
-                    <div className="char__content">
-                        {/*<ErrorBoundary>*/}
-                        {/*    <CharList onCharSelected={onCharSelected}/>*/}
-                        {/*</ErrorBoundary>*/}
-                        {/*<ErrorBoundary>*/}
-                        {/*    <CharInfo charId={selectedChar}/>*/}
-                        {/*</ErrorBoundary>*/}
-                        <ErrorBoundary>
+                    <Switch>
+                        <Route exact path="/">
+                            <ErrorBoundary>
+                                <RandomChar/>
+                            </ErrorBoundary>
+                            <div className="char__content">
+                                <ErrorBoundary>
+                                    <CharList onCharSelected={onCharSelected}/>
+                                </ErrorBoundary>
+                                <ErrorBoundary>
+                                    <CharInfo charId={selectedChar}/>
+                                </ErrorBoundary>
+                            </div>
+                            <img className="bg-decoration" src={decoration} alt="vision"/>
+                        </Route>
+                        <Route exact path="/comics">
+                            <AppBanner/>
                             <ComicsList/>
-                        </ErrorBoundary>
-                    </div>
-                    <img className="bg-decoration" src={decoration} alt="vision"/>
+                        </Route>
+                    </Switch>
                 </main>
             </div>
         </Router>
