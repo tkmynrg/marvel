@@ -6,6 +6,8 @@ import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Skeleton from "../skeleton/Skeleton";
 
+import {Link} from "react-router-dom";
+
 import "./charInfo.scss";
 
 const CharInfo = ({ charId }) => {
@@ -83,9 +85,12 @@ const View = ({ char }) => {
             <ul className="char__comics-list">
                 {comics.length > 0 ? null : "Comics is not yet"}
                 {comics.map((item, i) => {
+                    const comicsId = item.resourceURI.split('/').pop();
                     return (
                         <li key={i} className="char__comics-item">
-                            {item.name}
+                            <Link to={`/comics/${comicsId}`}>
+                                {item.name}
+                            </Link>
                         </li>
                     );
                 })}
