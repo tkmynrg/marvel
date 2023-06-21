@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "/static/css/main.fd593c77.css",
+    "main.js": "/static/js/main.1c0c4189.js",
+    "static/js/20.ec6e1e8e.chunk.js": "/static/js/20.ec6e1e8e.chunk.js",
+    "static/css/514.4ecf30b4.chunk.css": "/static/css/514.4ecf30b4.chunk.css",
+    "static/js/514.e6d63885.chunk.js": "/static/js/514.e6d63885.chunk.js",
+    "static/css/136.ea946b12.chunk.css": "/static/css/136.ea946b12.chunk.css",
+    "static/js/136.b4b3e837.chunk.js": "/static/js/136.b4b3e837.chunk.js",
+    "static/css/472.cc63f016.chunk.css": "/static/css/472.cc63f016.chunk.css",
+    "static/js/472.7a653ba7.chunk.js": "/static/js/472.7a653ba7.chunk.js",
+    "static/js/424.049df930.chunk.js": "/static/js/424.049df930.chunk.js",
+    "static/media/x-men.png": "/static/media/x-men.41b39e1944f148b7a123.png",
+    "static/media/UW.png": "/static/media/UW.422636b41d853d832a20.png",
+    "static/media/vision.png": "/static/media/vision.067d4ae1936d64a577ce.png",
+    "static/media/Avengers.png": "/static/media/Avengers.4065c8f9c94e3d8b039a.png",
+    "static/media/error.gif": "/static/media/error.42292aa12b6bc303ce99.gif",
+    "static/media/Avengers_logo.png": "/static/media/Avengers_logo.9eaf219344d83362e830.png",
+    "index.html": "/index.html",
+    "main.fd593c77.css.map": "/static/css/main.fd593c77.css.map",
+    "main.1c0c4189.js.map": "/static/js/main.1c0c4189.js.map",
+    "20.ec6e1e8e.chunk.js.map": "/static/js/20.ec6e1e8e.chunk.js.map",
+    "514.4ecf30b4.chunk.css.map": "/static/css/514.4ecf30b4.chunk.css.map",
+    "514.e6d63885.chunk.js.map": "/static/js/514.e6d63885.chunk.js.map",
+    "136.ea946b12.chunk.css.map": "/static/css/136.ea946b12.chunk.css.map",
+    "136.b4b3e837.chunk.js.map": "/static/js/136.b4b3e837.chunk.js.map",
+    "472.cc63f016.chunk.css.map": "/static/css/472.cc63f016.chunk.css.map",
+    "472.7a653ba7.chunk.js.map": "/static/js/472.7a653ba7.chunk.js.map",
+    "424.049df930.chunk.js.map": "/static/js/424.049df930.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fd593c77.css",
+    "static/js/main.1c0c4189.js"
+  ]
+}
