@@ -12,6 +12,8 @@ const SingleComicPage = lazy(() => import('../pages/SingleComicPage'));
 
 const App = () => {
 
+
+
     return (
         <Router>
             <div className="app">
