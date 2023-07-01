@@ -18,6 +18,11 @@ const useMarvelService = () => {
         return res.data.results.map(_transformCharacter);
     }
 
+    const getCharacterByName = async (name) => {
+        const res = await request(`${_apiBase}characters?name=${name}&apikey=${_apiKey}&ts=${_ts}&hash=${_md5Hash}`);
+        return res.data.results.map(_transformCharacter);
+    };
+
     const getCharacter = async (id) => {
         //read authorization doc
         const limit = 9;
@@ -68,7 +73,7 @@ const useMarvelService = () => {
         }
     }
 
-    return {loading, error, getAllCharacters, getCharacter, clearError, getAllComics, getComic,}
+    return {loading, error, getAllCharacters, getCharacter, clearError, getAllComics, getComic, getCharacterByName}
 }
 
 export default useMarvelService;

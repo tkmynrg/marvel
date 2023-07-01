@@ -1,11 +1,15 @@
 @import '../../style/variables.scss';
 
+.char__info-form {
+    position: sticky;
+    top: 5px;
+}
+
 .char {
     &__info {
         padding: 25px;
         box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
-        position: sticky; // прилипание при прокрутке
-        top: 10px; // верхний отступ до прилипания
+        position: relative;
         z-index: 5;
         background-color: #fff;
         &-name {
